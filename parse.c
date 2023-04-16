@@ -1,5 +1,15 @@
 #include "parse.h"
 
+int parse_xml(char* request, xmlNodePtr* root, xmlDocPtr* document){
+  *document = xmlReadMemory(request, strlen(request), NULL, NULL, 0);
+  if (*document == NULL) {
+    printf("Failed to parse XML request\n");
+    return -1;
+  }
+  *root = xmlDocGetRootElement(*document);
+  return 1;
+}
+
 void print_element(xmlNodePtr node)
 {
     if (node->type == XML_ELEMENT_NODE) {

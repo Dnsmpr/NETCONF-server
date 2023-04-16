@@ -6,15 +6,13 @@ int main()
     xmlInitParser();
 
     // Parse the XML request
-    xmlDocPtr doc = xmlReadMemory(REQUEST, sizeof(REQUEST), NULL, NULL, 0);
-    if (doc == NULL) {
-        printf("Failed to parse XML request\n");
-        return 1;
+    xmlNodePtr root = NULL;
+    xmlDocPtr doc = NULL;
+    int result = parse_xml(REQUEST, &root, &doc);
+    if (result == -1){
+        printf("ERROR PARSING");
+        return -1;
     }
-
-    // Get the root element of the request
-    xmlNodePtr root = xmlDocGetRootElement(doc);
-
     // Print the type of request
     printf("Request type: %s\n", root->name);
 
