@@ -21,3 +21,4 @@
 
 
 void traverse_xml(xmlNodePtr node, void (*xml_operation)(xmlNodePtr));
+void print_element(xmlNodePtr node);
