@@ -3,7 +3,7 @@ CFLAGS=-Wall -g
 LIBS=-lxml2
 TARGET=run
 
-SRCS=parse.c main.c
+SRCS=parse.c main.c hashmap.c
 OBJS=$(SRCS:.c=.o)
 
 all: $(TARGET)
