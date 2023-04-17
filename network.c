@@ -1,164 +1,4 @@
-/*
- *  network.c : netconf daemon network layer.
- *  Copyright (C) 2003 - Madynes Research Team - LORIA, FR
- *  Author : Benjamin Zores  <benjamin.zores@loria.fr>
- *  
- *   This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *   This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *   You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-/* 
- * Provides a threaded OpenSSL server with non-blocking connection handling
- * Creating new keys :
- *   - Private Key
- *     openssl genrsa -out server.key 2048
- *   - Certificate
- *     openssl req -new -x509 -key server.key -out server.cert -days 365
- */
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <fcntl.h>
-
-
-/*** MBEDTLS */
-#include "mbedtls/platform.h"
-#include "mbedtls/entropy.h"
-#include "mbedtls/ctr_drbg.h"
-#include "mbedtls/x509.h"
-#include "mbedtls/ssl.h"
-#include "mbedtls/net_sockets.h"
-#include "mbedtls/error.h"
-#include "mbedtls/debug.h"
-
-#if defined(MBEDTLS_SSL_CACHE_C)
-#include "mbedtls/ssl_cache.h"
-#endif
-
-#define DEBUG_LEVEL 0
-
-#define SERVER_PORT "6513" // Default port according to RFC 7589
-#define SERVER_CERTIFICATE_FILE "/home/kris/certs/server.crt"
-#define SERVER_KEY_FILE "/home/kris/certs/server.key"
-#define CA_CERTIFICATE_FILE "/home/kris/certs/ca.crt"
-
-#define NETCONF_HELLO \
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"\
-"<hello xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\">"\
- "<capabilities>"\
-  "<capability>urn:ietf:params:netconf:base:1.0</capability>"\
-  "<capability>urn:ietf:params:netconf:capability:writable-running:1.0</capability>"\
-  "<capability>urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring</capability>"\
-  "<capability>urn:hms:abcc?module=abcc&amp;revision=2000-01-01</capability>"\
- "</capabilities>"\
- "<session-id>4</session-id>"\
-"</hello>]]>]]>"
-
-#define NETCONF_RESPONSE_1 \
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"\
-"<rpc-reply xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\" message-id=\"1\">"\
- "<data xmlns=\"urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring\">"\
-   "module abcc {"\
-       "yang-version 1.1;"\
-       "namespace \"urn:hms:abcc\";"\
-       "prefix \"abcc\";"\
-       "revision 2000-01-01;"\
-       "container attributes {"\
-           "description \"Attributes of the abcc\";"\
-           "config true;"\
-           "leaf name {"\
-               "mandatory true;"\
-               "type string;"\
-           "}"\
-           "leaf age {"\
-               "type uint8;"\
-           "}"\
-       "}"\
-   "}"\
- "</data>"\
-"</rpc-reply>]]>]]>"
-
-#define NETCONF_RESPONSE_2 \
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"\
-"<rpc-reply xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\" message-id=\"2\">"\
- "<data>"\
-  "<modules-state xmlns=\"urn:ietf:params:xml:ns:yang:ietf-yang-library\">"\
-   "<module>"\
-    "<name>abcc</name>"\
-    "<revision>2000-01-01</revision>"\
-    "<namespace>urn:hms:abcc</namespace>"\
-    "<conformance-type>implement</conformance-type>"\
-    "<submodule></submodule>"\
-    "<feature></feature>"\
-    "<deviation></deviation>"\
-   "</module>"\
-  "</modules-state>"\
- "</data>"\
-"</rpc-reply>]]>]]>"
-
-#define NETCONF_RESPONSE_3 \
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"\
-"<rpc-reply xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\" message-id=\"3\">"\
- "<data>"\
-  "<netconf-state xmlns=\"urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring\">"\
-   "<schemas>"\
-    "<schema>"\
-     "<identifier>abcc</identifier>"\
-     "<version>2000-01-01</version>"\
-     "<format>yang</format>"\
-     "<namespace>urn:hms:abcc</namespace>"\
-     /*"<location>NETCONF</location>"*/\
-    "</schema>"\
-   "</schemas>"\
-  "</netconf-state>"\
- "</data>"\
-"</rpc-reply>]]>]]>"
-
-#define NETCONF_RESPONSE_4 \
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"\
-"<rpc-reply message-id=\"4\" xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\">"\
-  "<data>"\
-    "<abcc xmlns=\"urn:hms:abcc\">"\
-      "<attributes>"\
-        "<name>Abcc</name>"\
-        "<age>30</age>"\
-      "</attributes>"\
-    "</abcc>"\
-  "</data>"\
-"</rpc-reply>]]>]]>"
-
-#define NETCONF_RESPONSE_5 \
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"\
-"<rpc-reply message-id=\"5\" xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\">"\
-  "<data>"\
-    "<abcc xmlns=\"urn:hms:abcc\">"\
-      "<attributes>"\
-        "<name>Abcc</name>"\
-        "<age>30</age>"\
-      "</attributes>"\
-    "</abcc>"\
-  "</data>"\
-"</rpc-reply>]]>]]>"\
-
-#define NETCONF_RESPONSE_6 \
-"<rpc-reply message-id=\"6\" xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\">"\
-"<ok/>"\
-"</rpc-reply>"
-
+#include "network.h"
 
 static void my_debug(void *ctx, int level,
                      const char *file, int line,
@@ -169,13 +9,6 @@ static void my_debug(void *ctx, int level,
     mbedtls_fprintf((FILE *) ctx, "%s:%04d: %s", file, line, str);
     fflush((FILE *) ctx);
 }
-
-
-#include "mbedtls/ssl.h"
-#include "mbedtls/net_sockets.h"
-
-#define RESET -1
-#define EXIT -2
 
 int write_to_client(mbedtls_ssl_context* ssl, const char* hello_string) {
     mbedtls_printf("  > Write to client:");
@@ -248,26 +81,19 @@ int mbed_ssl_server() {
     mbedtls_x509_crt srvcert;   // server certificate
     mbedtls_x509_crt cacert;
     mbedtls_pk_context pkey;    // private key
-#if defined(MBEDTLS_SSL_CACHE_C) 
     mbedtls_ssl_cache_context cache;
-#endif
 
     mbedtls_net_init(&listen_fd);
     mbedtls_net_init(&client_fd);
     mbedtls_ssl_init(&ssl);
     mbedtls_ssl_config_init(&conf);
-#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_cache_init(&cache);
-#endif
     mbedtls_x509_crt_init(&srvcert);
     mbedtls_x509_crt_init(&cacert);
     mbedtls_pk_init(&pkey);
     mbedtls_entropy_init(&entropy);
     mbedtls_ctr_drbg_init(&ctr_drbg);
-
-#if defined(MBEDTLS_DEBUG_C)
     mbedtls_debug_set_threshold(DEBUG_LEVEL);
-#endif
 
     /** 1. Seed the RNG */
     mbedtls_printf("  . Seeding the random number generator...");
