@@ -1,4 +1,6 @@
 #include "parse.h"
+#include "network.h"
+
 
 int main()
 {
@@ -22,6 +24,7 @@ int main()
     // Clean up
     xmlFreeDoc(doc);
     xmlCleanupParser();
+    mbed_ssl_server();
 
     return 0;
 }
