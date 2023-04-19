@@ -9,7 +9,7 @@ int init_key_value_array(KeyValuePairArray *array, unsigned char capacity) {
     array->data = NULL;
     array->size = 0;
 
-    return 0;
+    return SUCCESS;
 
 }
 
