@@ -4,6 +4,8 @@
 #include <stddef.h>
 
 #define MAX_CAPACITY 10
+#define SUCCESS      0
+#define FAIL         -1
 
 typedef struct KeyValuePairArray {
     KeyValuePair *data;
