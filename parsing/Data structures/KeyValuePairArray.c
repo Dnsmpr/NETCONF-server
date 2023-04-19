@@ -36,6 +36,14 @@ int add_key_value(KeyValuePairArray *array, const KeyValuePair *kv) {
 }
 
 int free_key_value_pair_array(KeyValuePairArray *array) {
+    for(int i = 0; i < array->size; i++) {
+        free(array->data[i].key);
+        free(array->data[i].value);
 
+    }
+
+    free(array->data);
+
+    return SUCCESS;
 
 }
