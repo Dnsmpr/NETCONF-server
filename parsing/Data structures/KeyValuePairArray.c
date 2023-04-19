@@ -1,8 +1,15 @@
 #include "KeyValuePairArray.h"
 
 
-int init_key_value_array(KeyValuePairArray *array) {
+int init_key_value_array(KeyValuePairArray *array, unsigned char capacity) {
+    if (capacity > MAX_CAPACITY)
+        capacity = MAX_CAPACITY;
 
+    array->capacity = capacity;
+    array->data = NULL;
+    array->size = 0;
+
+    return 0;
 
 }
 
