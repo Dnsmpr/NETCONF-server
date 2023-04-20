@@ -49,7 +49,7 @@ int free_key_value_pair_array(KeyValuePairArray *array) {
         free(array->data[i].value);
 
     }
-
+    free(array->request_type);
     free(array->data);
 
     return SUCCESS;
