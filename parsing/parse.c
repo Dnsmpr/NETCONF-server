@@ -34,6 +34,12 @@ void print_element(xmlNodePtr node)
     }
 }
 
+void process_xml(KeyValuePairArray* array, xmlNodePtr node) {
+  traverse_xml(node, array, &extract_xml);
+  set_request_type((const char*)(node->name), array);
+
+}
+
 void extract_xml(xmlNodePtr node, KeyValuePairArray* array)
 {
     if (node->type == XML_ELEMENT_NODE) {
