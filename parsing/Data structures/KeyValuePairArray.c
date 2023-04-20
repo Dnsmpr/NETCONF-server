@@ -6,7 +6,7 @@ int init_key_value_array(KeyValuePairArray *array, unsigned char capacity) {
         capacity = MAX_CAPACITY;
 
     array->capacity = capacity;
-    array->data = NULL;
+    array->data = malloc(array->capacity*sizeof(KeyValuePair));
     array->size = 0;
 
     return SUCCESS;
@@ -46,4 +46,11 @@ int free_key_value_pair_array(KeyValuePairArray *array) {
 
     return SUCCESS;
 
+}
+
+int print_all_nodes(KeyValuePairArray *array) {
+    for (int i = 0; i < array->size; i++)
+        printf("key: %s \t value: %s", array->data[i].key, array->data[i].value);
+
+    return SUCCESS;
 }
