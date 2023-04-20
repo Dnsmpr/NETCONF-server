@@ -34,9 +34,18 @@ void print_element(xmlNodePtr node)
     }
 }
 
-void process_xml(KeyValuePairArray* array, xmlNodePtr node) {
+int process_xml(KeyValuePairArray* array, xmlNodePtr node) {
+  if(!node || !array){
+    return -1;
+  }
+
+  const char *netconf_request = (const char*)(node->name); 
+  if(strcmp(netconf_request, HELLO)) {
+    return -1;
+  }
+  set_request_type(netconf_request, array);
   traverse_xml(node, array, &extract_xml);
-  set_request_type((const char*)(node->name), array);
+  return 0;
 
 }
 
