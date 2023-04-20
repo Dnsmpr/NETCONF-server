@@ -50,7 +50,7 @@ int free_key_value_pair_array(KeyValuePairArray *array) {
 
 int print_all_nodes(KeyValuePairArray *array) {
     for (int i = 0; i < array->size; i++)
-        printf("key: %s \t value: %s", array->data[i].key, array->data[i].value);
+        printf("key: %- *s\tvalue: %- *s\n", 15, array->data[i].key, 15, (const char*)array->data[i].value);
 
     return SUCCESS;
 }
