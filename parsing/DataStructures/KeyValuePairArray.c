@@ -26,6 +26,14 @@ int init_key_value_pair(KeyValuePair *kv, const char *key, const void *value, si
 
 }
 
+int set_request_type(const char *request, KeyValuePairArray *array) {
+    array->request_type = strdup(request);
+    if(!array->request_type)
+        return FAIL;
+
+    return SUCCESS;
+}
+
 int add_key_value(KeyValuePairArray *array, const KeyValuePair *kv) {
     if(array->size == array->capacity)
         return FAIL;
