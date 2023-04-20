@@ -2,6 +2,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <string.h>
+#include "KeyValuePairArray.h"
 
 #define get_operaton "get"
 #define get_config_operaton "get-config"
@@ -20,6 +21,7 @@
   </get>\
 </rpc>"
 
+void extract_xml(xmlNodePtr node, KeyValuePairArray* array);
 int parse_xml(char* request, xmlNodePtr* root, xmlDocPtr* document);
 void traverse_xml(xmlNodePtr node, void (*xml_operation)(xmlNodePtr));
 void print_element(xmlNodePtr node);

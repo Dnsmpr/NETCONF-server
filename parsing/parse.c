@@ -34,6 +34,17 @@ void print_element(xmlNodePtr node)
     }
 }
 
+void extract_xml(xmlNodePtr node, KeyValuePairArray* array)
+{
+    if (node->type == XML_ELEMENT_NODE) {
+        if (node->children != NULL && node->children->type == XML_TEXT_NODE) {
+            KeyValuePair kv;
+            init_key_value_pair(&kv, (const char*)node->name, (const void*)node->children->content, xmlStrlen(node->children->content) + 1);
+            add_key_value(array, &kv);
+        }
+    }
+}
+
 void traverse_xml(xmlNodePtr node, void (*xml_operation)(xmlNodePtr))
 {
   for (xmlNodePtr child = node->children; child != NULL; child = child->next) {
