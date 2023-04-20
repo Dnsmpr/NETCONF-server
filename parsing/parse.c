@@ -1,13 +1,27 @@
 #include "parse.h"
 
 int parse_xml(char* request, xmlNodePtr* root, xmlDocPtr* document){
-  *document = xmlReadMemory(request, strlen(request), NULL, NULL, 0);
-  if (*document == NULL) {
-    printf("Failed to parse XML request\n");
-    return -1;
-  }
-  *root = xmlDocGetRootElement(*document);
-  return 1;
+    char *request_copy = strdup(request);
+    if (request_copy == NULL) {
+        printf("Failed to allocate memory for request_copy\n");
+        return -1;
+    }
+
+    char *delimiter = strstr(request_copy, "]]>]]>");
+    if (delimiter != NULL) {
+        *delimiter = '\0';
+    }
+
+    *document = xmlReadMemory(request_copy, strlen(request_copy), NULL, NULL, 0);
+    if (*document == NULL) {
+        printf("Failed to parse XML request\n");
+        free(request_copy);
+        return -1;
+    }
+    *root = xmlDocGetRootElement(*document);
+
+    free(request_copy);
+    return 1;
 }
 
 void print_element(xmlNodePtr node)
