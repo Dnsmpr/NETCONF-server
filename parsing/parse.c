@@ -45,11 +45,11 @@ void extract_xml(xmlNodePtr node, KeyValuePairArray* array)
     }
 }
 
-void traverse_xml(xmlNodePtr node, void (*xml_operation)(xmlNodePtr))
+void traverse_xml(xmlNodePtr node, KeyValuePairArray* array, void (*xml_operation)(xmlNodePtr, KeyValuePairArray* array))
 {
   for (xmlNodePtr child = node->children; child != NULL; child = child->next) {
-    xml_operation(child);
-    traverse_xml(child, xml_operation);
+    xml_operation(child, array);
+    traverse_xml(child, array, xml_operation);
   }
 }
 

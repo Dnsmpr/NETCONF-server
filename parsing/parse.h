@@ -23,5 +23,5 @@
 
 void extract_xml(xmlNodePtr node, KeyValuePairArray* array);
 int parse_xml(char* request, xmlNodePtr* root, xmlDocPtr* document);
-void traverse_xml(xmlNodePtr node, void (*xml_operation)(xmlNodePtr));
+void traverse_xml(xmlNodePtr node, KeyValuePairArray* array, void (*xml_operation)(xmlNodePtr, KeyValuePairArray* array));
 void print_element(xmlNodePtr node);
