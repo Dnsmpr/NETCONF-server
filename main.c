@@ -31,11 +31,12 @@ int main()
         return -1;
     }
     // Print the type of request
-    printf("Request type: %s\n", root->name);
+    // printf("Request type: %s\n", root->name);
 
     // Traverse the XML tree and print the value of the field
     init_key_value_array(&array, 7);
-    traverse_xml(root, &array, &extract_xml);
+    process_xml(&array, root);
+    //set_request_type((const char*)"rpc", &array);
     print_all_nodes(&array);
     free_key_value_pair_array(&array);
 
