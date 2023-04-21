@@ -252,14 +252,17 @@ while (1) {
     init_key_value_array(&array, 10);
     process_xml(&array, root);
     print_all_nodes(&array);
+
+
+    char* client_reply;
+    client_reply = create_xml_reply(&array);
+    ret = write_to_client(&ssl, client_reply);
     free_key_value_pair_array(&array);
 
 
     // Clean up
     xmlFreeDoc(doc);
     xmlCleanupParser();
-
-    ret = write_to_client(&ssl, NETCONF_HELLO);
     if(ret == RESET)
         goto reset;
     else if (ret == EXIT)
