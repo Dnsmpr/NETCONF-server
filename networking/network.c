@@ -40,37 +40,6 @@ int write_to_client(mbedtls_ssl_context* ssl, const char* hello_string) {
     return 0;
 }
 
-const char* get_message(int msg_num) {
-    switch (msg_num) {
-        case 0:
-            return NETCONF_HELLO;
-
-        case 1:
-            return NETCONF_RESPONSE_1;
-        
-        case 2:
-            return NETCONF_RESPONSE_2;
-
-        case 3:
-            return NETCONF_RESPONSE_3;
-
-        case 4:
-            return NETCONF_RESPONSE_4;
-
-        case 5:
-            return NETCONF_RESPONSE_5;
-
-        case 6:
-            return NETCONF_RESPONSE_6;
-
-        default:
-            mbedtls_printf("Invalid msg_num: %d\n", msg_num);
-            return "";
-    }
-}
-
-
-
 int mbed_ssl_server() {
   int ret, len;
     mbedtls_net_context listen_fd, client_fd;
@@ -232,14 +201,6 @@ reset:
 
     mbedtls_printf(" ok\n");
 
-    /** Send the NETCONF response immediately after handshake 
-    ret = write_to_client(&ssl, NETCONF_HELLO);
-    if (ret == RESET) {
-        goto reset;
-    } else if (ret == EXIT) {
-        goto exit;
-    }*/
-
     /** 7. Read the HTTP Request */
 /** Continuously read from the client */
 int msg_num = 0;
@@ -287,13 +248,9 @@ while (1) {
         printf("ERROR PARSING");
         return -1;
     }
-    // Print the type of request
-    // printf("Request type: %s\n", root->name);
 
-    // Traverse the XML tree and print the value of the field
     init_key_value_array(&array, 10);
     process_xml(&array, root);
-    //set_request_type((const char*)"rpc", &array);
     print_all_nodes(&array);
     free_key_value_pair_array(&array);
 
@@ -301,7 +258,7 @@ while (1) {
     // Clean up
     xmlFreeDoc(doc);
     xmlCleanupParser();
-    
+
     ret = write_to_client(&ssl, NETCONF_HELLO);
     if(ret == RESET)
         goto reset;
@@ -309,19 +266,6 @@ while (1) {
     {
         goto exit;
     }
-    // Clean up 
-/*
-    
-    if (msg_num < 7) {
-        ret = write_to_client(&ssl, get_message(msg_num));
-        msg_num++;
-        if (ret == RESET) {
-            goto reset;
-        } else if (ret == EXIT) {
-            goto exit;
-        }
-    }
-    */
 }
 
 
