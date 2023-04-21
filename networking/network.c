@@ -310,18 +310,3 @@ exit:
     mbedtls_exit(ret);
 }
 
-
-
-
-/* start a new server
- * int ssl_support : boolean to determine whether to use SSL encryption or not
- * int port : port to bind server
- */
-/*
-int main () {
-    int r;
-    r = mbed_ssl_server();
-    return r;
-}
-*/
-
