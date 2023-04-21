@@ -301,6 +301,15 @@ while (1) {
     // Clean up
     xmlFreeDoc(doc);
     xmlCleanupParser();
+    
+    ret = write_to_client(&ssl, NETCONF_HELLO);
+    if(ret == RESET)
+        goto reset;
+    else if (ret == EXIT)
+    {
+        goto exit;
+    }
+    // Clean up 
 /*
     
     if (msg_num < 7) {
