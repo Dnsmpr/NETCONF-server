@@ -40,10 +40,11 @@ int process_xml(KeyValuePairArray* array, xmlNodePtr node) {
   }
 
   const char *netconf_request = (const char*)(node->name); 
-  if(strcmp(netconf_request, HELLO)) {
+  if( !strcmp(netconf_request, HELLO) && !strcmp(netconf_request, RPC) ) {
     return -1;
   }
-  set_request_type(netconf_request, array);
+  
+  set_request_type((const char*)(node->name), array);
   traverse_xml(node, array, &extract_xml);
   return 0;
 
