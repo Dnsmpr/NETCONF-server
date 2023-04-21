@@ -8,6 +8,7 @@
 #define get_config_operaton "get-config"
 #define lock_operaton "lock"
 #define HELLO "hello"
+#define RPC "rpc"
 
 #define REQUEST "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
 <rpc message-id=\"101\" xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\">\
