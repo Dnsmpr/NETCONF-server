@@ -28,3 +28,4 @@ int parse_xml(char* request, xmlNodePtr* root, xmlDocPtr* document);
 void traverse_xml(xmlNodePtr node, KeyValuePairArray* array, void (*xml_operation)(xmlNodePtr, KeyValuePairArray* array));
 void print_element(xmlNodePtr node);
 int process_xml(KeyValuePairArray* array, xmlNodePtr node);
+char* create_xml_reply(KeyValuePairArray *array);

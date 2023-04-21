@@ -1,4 +1,5 @@
 #include "parse.h"
+#include "network.h"
 
 int parse_xml(char* request, xmlNodePtr* root, xmlDocPtr* document){
     char *request_copy = strdup(request);
@@ -47,6 +48,20 @@ int process_xml(KeyValuePairArray* array, xmlNodePtr node) {
   set_request_type((const char*)(node->name), array);
   traverse_xml(node, array, &extract_xml);
   return 0;
+
+}
+
+char* create_xml_reply(KeyValuePairArray *array) {
+  if(!strcmp(array->request_type, HELLO)) {
+    return NETCONF_HELLO;
+  }
+
+  if(!strcmp(array->request_type, RPC)) {
+  return NETCONF_RESPONSE_1;
+  }
+
+
+  return "";
 
 }
 
