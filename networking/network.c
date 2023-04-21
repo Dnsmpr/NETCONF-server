@@ -1,4 +1,7 @@
 #include "network.h"
+#include "KeyValuePairArray.h"
+#include "parse.h"
+
 
 static void my_debug(void *ctx, int level,
                      const char *file, int line,
@@ -33,7 +36,7 @@ int write_to_client(mbedtls_ssl_context* ssl, const char* hello_string) {
 
     len = ret;
     mbedtls_printf(" %d bytes written\n\n%s\n", len, (char *)buf);
-
+ 
     return 0;
 }
 
@@ -271,7 +274,34 @@ while (1) {
     }
 
     len = ret; // The number of bytes read
-    mbedtls_printf(" %d bytes read\n\n%s", len, (char *)buf); // Print the response
+    mbedtls_printf(" %d bytes read\n\n%s\n\n", len, (char *)buf); // Print the response
+
+    KeyValuePairArray array;
+
+
+    xmlInitParser();
+    xmlNodePtr root = NULL;
+    xmlDocPtr doc = NULL;
+    int result = parse_xml((char *)buf, &root, &doc);
+    if (result == -1){
+        printf("ERROR PARSING");
+        return -1;
+    }
+    // Print the type of request
+    // printf("Request type: %s\n", root->name);
+
+    // Traverse the XML tree and print the value of the field
+    init_key_value_array(&array, 10);
+    process_xml(&array, root);
+    //set_request_type((const char*)"rpc", &array);
+    print_all_nodes(&array);
+    free_key_value_pair_array(&array);
+
+
+    // Clean up
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+/*
     
     if (msg_num < 7) {
         ret = write_to_client(&ssl, get_message(msg_num));
@@ -282,6 +312,7 @@ while (1) {
             goto exit;
         }
     }
+    */
 }
 
 
