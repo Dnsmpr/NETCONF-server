@@ -15,6 +15,12 @@ int init_key_value_array(KeyValuePairArray *array, unsigned char capacity) {
 
 int init_key_value_pair(KeyValuePair *kv, const char *key, const void *value, size_t value_size) {
     kv->key = strdup(key);
+    if(!value) {
+        kv->value = malloc(1);
+        *((char*)kv->value) = '\0';
+        return SUCCESS;
+    }
+
     kv->value = malloc(value_size);
 
     if(!kv->value)
