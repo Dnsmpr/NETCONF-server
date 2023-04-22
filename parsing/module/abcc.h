@@ -2,7 +2,7 @@
 #define ABCC_H
 typedef struct abcc
 {
-    /* data */
+    char *IP_ADDRESS;
 }abcc;
 
 #endif
