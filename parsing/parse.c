@@ -57,7 +57,21 @@ char* create_xml_reply(KeyValuePairArray *array) {
   }
 
   if(!strcmp(array->request_type, RPC)) {
-  return NETCONF_RESPONSE_1;
+    if(!get_key(array, (char*) "get")) {
+      if(!get_key(array, (char*) "netconf-state")) {
+        return NETCONF_RESPONSE_2;
+      }
+      if(!get_key(array, (char*) "modules-state")) {
+          return NETCONF_RESPONSE_1;
+      }
+      return NETCONF_RESPONSE_4;
+    }
+
+    if(!get_key(array, (char*) "get-config")) {
+      return NETCONF_RESPONSE_3;
+    } 
+      
+
   }
 
 
