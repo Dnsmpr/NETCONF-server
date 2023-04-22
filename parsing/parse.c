@@ -64,17 +64,18 @@ char* create_xml_reply(KeyValuePairArray *array) {
       if(!get_key(array, (char*) "modules-state")) {
           return NETCONF_RESPONSE_1;
       }
-      return NETCONF_RESPONSE_4;
+      
     }
 
-    if(!get_key(array, (char*) "get-config")) {
-      return NETCONF_RESPONSE_3;
-    } 
-      
+  if(!get_key(array, (char*) "get-schema")) {
+    return NETCONF_RESPONSE_1;
+  }
+
+    return NETCONF_RESPONSE_4;
 
   }
 
-
+  printf("\n\n THIS SHOULD NOT RUN!!!!");
   return "";
 
 }
