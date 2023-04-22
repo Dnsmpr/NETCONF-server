@@ -67,12 +67,14 @@ char* create_xml_reply(KeyValuePairArray *array) {
 
 void extract_xml(xmlNodePtr node, KeyValuePairArray* array)
 {
+  void *value = NULL; // Initialize value to NULL
     if (node->type == XML_ELEMENT_NODE) {
         if (node->children != NULL && node->children->type == XML_TEXT_NODE) {
-            KeyValuePair kv;
-            init_key_value_pair(&kv, (const char*)node->name, (const void*)node->children->content, xmlStrlen(node->children->content) + 1);
-            add_key_value(array, &kv);
+          value = (void*) node->children->content;
         }
+          KeyValuePair kv;
+          init_key_value_pair(&kv, (const char*)node->name, value, value ? xmlStrlen(node->children->content) + 1 : 0); // Handle NULL value case
+          add_key_value(array, &kv);
     }
 }
 
