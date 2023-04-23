@@ -1,5 +1,6 @@
 #ifndef ABCC_H
 #define ABCC_H
+#include<string.h>
 typedef struct abcc
 {
     char *IP_ADDRESS;
