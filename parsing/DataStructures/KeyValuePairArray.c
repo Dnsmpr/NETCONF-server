@@ -73,6 +73,21 @@ int get_key(KeyValuePairArray *array, char* key) {
         
 }
 
+int get_value(KeyValuePairArray *array, char* key, void **value) {
+    for (int i = 0; i < array->size; i++) {
+        if(!strcmp(key, array->data[i].key)) {
+            *value = array->data[i].value;
+            return SUCCESS;
+
+        }
+            
+
+    }
+
+    return FAIL;
+        
+}
+
 int print_all_nodes(KeyValuePairArray *array) {
     printf("Request type: %s \n", array->request_type);
     for (int i = 0; i < array->size; i++)

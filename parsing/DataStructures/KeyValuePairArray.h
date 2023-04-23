@@ -32,5 +32,6 @@ int add_key_value(KeyValuePairArray *array, const KeyValuePair *kv);
 int free_key_value_pair_array(KeyValuePairArray *array);
 int print_all_nodes(KeyValuePairArray *array);
 int get_key(KeyValuePairArray *array, char* key);
+int get_value(KeyValuePairArray *array, char* key, void **value);
 
 #endif
