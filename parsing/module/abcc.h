@@ -7,4 +7,5 @@ typedef struct abcc
 }abcc;
 
 int init_abcc(abcc *device);
+int set_IP_ADDRESS(abcc *device, char* IP);
 #endif
