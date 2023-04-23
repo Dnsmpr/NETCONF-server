@@ -52,7 +52,7 @@ int process_xml(KeyValuePairArray* array, xmlNodePtr node) {
 
 }
 
-char* create_xml_reply(KeyValuePairArray *array, abcc *device) {
+char* create_xml_reply(KeyValuePairArray *array, abcc* device, char *message_id) {
   if(!strcmp(array->request_type, HELLO)) {
     return NETCONF_HELLO;
   }
@@ -65,27 +65,83 @@ char* create_xml_reply(KeyValuePairArray *array, abcc *device) {
       if(!get_key(array, (char*) "modules-state")) {
           return NETCONF_RESPONSE_1;
       }
-      
+      return create_netconf_response_4(device->IP_ADDRESS, message_id);
     }
 
-  if(!get_key(array, (char*) "get-schema")) {
-    return NETCONF_RESPONSE_1;
-  }
-
   if(!get_key(array, (char*) "edit-config")) {
+    if(get_key(array, (char*) "running")) {
+      return create_netconf_response_4(device->IP_ADDRESS, message_id);
+    }
     void* value = NULL;
     get_value(array, (char*) "IP_ADDRESS", &value);
     set_IP_ADDRESS(device, (char*) value);
+    return NETCONF_RESPONSE_6;
 
   }
 
-    return NETCONF_RESPONSE_4;
+    if(!get_key(array, (char*) "get-config")) {
+      return NETCONF_RESPONSE_3;
+    } 
+      
 
   }
 
-  printf("\n\n THIS SHOULD NOT RUN!!!!");
+
   return "";
 
+}
+
+char *create_netconf_response_4(char* IP_ADR, char *msg_num) {
+    xmlDocPtr doc = NULL;
+    xmlNodePtr root_element = NULL;
+
+    // Create a new XML document
+    doc = xmlNewDoc(BAD_CAST "1.0");
+
+    // Create the root element 'rpc-reply' and add it to the document
+    root_element = xmlNewNode(NULL, BAD_CAST "rpc-reply");
+    xmlNewProp(root_element, BAD_CAST "xmlns", BAD_CAST "urn:ietf:params:xml:ns:netconf:base:1.0");
+    xmlNewProp(root_element, BAD_CAST "message-id", BAD_CAST msg_num);
+    xmlDocSetRootElement(doc, root_element);
+
+    // Create 'data' element and add it to the root element
+    xmlNodePtr data_element = xmlNewChild(root_element, NULL, BAD_CAST "data", NULL);
+
+    // Create 'abcc' element and add it to the 'data' element
+    xmlNodePtr abcc_element = xmlNewChild(data_element, NULL, BAD_CAST "abcc", NULL);
+    xmlNewProp(abcc_element, BAD_CAST "xmlns", BAD_CAST "urn:hms:abcc");
+
+    // Create 'attributes' element and add it to the 'abcc' element
+    xmlNodePtr attributes_element = xmlNewChild(abcc_element, NULL, BAD_CAST "attributes", NULL);
+
+    // Create 'IP_ADDRESS' element and add it to the 'attributes' element
+    xmlNewChild(attributes_element, NULL, BAD_CAST "IP_ADDRESS", BAD_CAST IP_ADR);
+
+    // Serialize the XML document to a string
+    xmlChar *xml_buff;
+    int buffersize;
+    xmlDocDumpFormatMemory(doc, &xml_buff, &buffersize, 0);
+
+    // Allocate memory for the new string, including the end of message pattern and the null terminator
+    char *output = (char *) malloc(buffersize + 1 + 6);
+    strncpy(output, (char *) xml_buff, buffersize);
+    strcpy(output + buffersize, "]]>]]>");
+    output[buffersize + 6] = '\0';
+
+    // Clean up memory allocations
+    xmlFree(xml_buff);
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+
+    return output;
+}
+
+
+char *int_to_str(int num) {
+    int len = snprintf(NULL, 0, "%d", num);
+    char *str = (char *) malloc(len + 1);
+    snprintf(str, len + 1, "%d", num);
+    return str;
 }
 
 void extract_xml(xmlNodePtr node, KeyValuePairArray* array)
