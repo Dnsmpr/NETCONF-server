@@ -269,6 +269,7 @@ while (1) {
     // Clean up
     xmlFreeDoc(doc);
     xmlCleanupParser();
+    free(msg_num_str);
     ++msg_num;
 
     if(ret == RESET)
