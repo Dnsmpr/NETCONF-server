@@ -1,6 +1,7 @@
 #include "network.h"
 #include "KeyValuePairArray.h"
 #include "parse.h"
+#include "abcc.h"
 
 
 static void my_debug(void *ctx, int level,
@@ -204,6 +205,8 @@ reset:
     /** 7. Read the HTTP Request */
 /** Continuously read from the client */
 int msg_num = 0;
+abcc device;
+init_abcc(&device);
 while (1) {
     mbedtls_printf("\n\n  < Read from client:");
     fflush(stdout);
@@ -248,6 +251,7 @@ while (1) {
         printf("ERROR PARSING");
         return -1;
     }
+    printf("\n\n IP BEFORE: %s \n\n", device.IP_ADDRESS);
 
     init_key_value_array(&array, 10);
     process_xml(&array, root);
@@ -255,14 +259,16 @@ while (1) {
 
 
     char* client_reply;
-    client_reply = create_xml_reply(&array);
+    client_reply = create_xml_reply(&array, &device);
     ret = write_to_client(&ssl, client_reply);
+    printf("\n\n IP AFTER: %s \n\n", device.IP_ADDRESS);
     free_key_value_pair_array(&array);
 
 
     // Clean up
     xmlFreeDoc(doc);
     xmlCleanupParser();
+
     if(ret == RESET)
         goto reset;
     else if (ret == EXIT)
