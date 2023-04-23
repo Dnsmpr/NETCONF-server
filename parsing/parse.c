@@ -1,5 +1,6 @@
 #include "parse.h"
 #include "network.h"
+#include "abcc.h"
 
 int parse_xml(char* request, xmlNodePtr* root, xmlDocPtr* document){
     char *request_copy = strdup(request);
@@ -51,7 +52,7 @@ int process_xml(KeyValuePairArray* array, xmlNodePtr node) {
 
 }
 
-char* create_xml_reply(KeyValuePairArray *array) {
+char* create_xml_reply(KeyValuePairArray *array, abcc *device) {
   if(!strcmp(array->request_type, HELLO)) {
     return NETCONF_HELLO;
   }
@@ -69,6 +70,13 @@ char* create_xml_reply(KeyValuePairArray *array) {
 
   if(!get_key(array, (char*) "get-schema")) {
     return NETCONF_RESPONSE_1;
+  }
+
+  if(!get_key(array, (char*) "edit-config")) {
+    void* value = NULL;
+    get_value(array, (char*) "IP_ADDRESS", &value);
+    set_IP_ADDRESS(device, (char*) value);
+
   }
 
     return NETCONF_RESPONSE_4;

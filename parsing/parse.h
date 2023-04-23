@@ -3,6 +3,7 @@
 #include <libxml/tree.h>
 #include <string.h>
 #include "KeyValuePairArray.h"
+#include "abcc.h"
 
 #define get_operaton "get"
 #define get_config_operaton "get-config"
@@ -28,4 +29,4 @@ int parse_xml(char* request, xmlNodePtr* root, xmlDocPtr* document);
 void traverse_xml(xmlNodePtr node, KeyValuePairArray* array, void (*xml_operation)(xmlNodePtr, KeyValuePairArray* array));
 void print_element(xmlNodePtr node);
 int process_xml(KeyValuePairArray* array, xmlNodePtr node);
-char* create_xml_reply(KeyValuePairArray *array);
+char* create_xml_reply(KeyValuePairArray *array, abcc *device);
