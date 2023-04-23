@@ -31,3 +31,4 @@ void print_element(xmlNodePtr node);
 int process_xml(KeyValuePairArray* array, xmlNodePtr node);
 char* create_xml_reply(KeyValuePairArray *array, abcc *device, char *message_id);
 char *create_netconf_response_4(char* IP_ADR, char *msg_num);
+char *int_to_str(int num);
