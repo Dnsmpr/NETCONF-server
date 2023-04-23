@@ -1,7 +1,7 @@
 #include "abcc.h"
 
 int init_abcc(abcc *device) {
-    char* IP = "192.168.0.1";
+    char* IP = "192.168.1.150";
     device->IP_ADDRESS = strdup(IP);
     if(!device->IP_ADDRESS)
         return -1;
@@ -16,7 +16,7 @@ int set_IP_ADDRESS(abcc *device, char *IP) {
     device->IP_ADDRESS = strdup(IP);
     if(!device->IP_ADDRESS)
         return -1;
-        
+
     return 0;
 
 }
