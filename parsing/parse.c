@@ -68,6 +68,10 @@ char* create_xml_reply(KeyValuePairArray *array, abcc* device, char *message_id)
       return create_netconf_response_4(device->IP_ADDRESS, message_id);
     }
 
+    if(!get_key(array, (char*) "get-schema")) {
+      return NETCONF_RESPONSE_1;
+    }
+
   if(!get_key(array, (char*) "edit-config")) {
     if(get_key(array, (char*) "running")) {
       return create_netconf_response_4(device->IP_ADDRESS, message_id);
