@@ -131,7 +131,7 @@
 #define NETCONF_RESPONSE_6 \
 "<rpc-reply message-id=\"6\" xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\">"\
 "<ok/>"\
-"</rpc-reply>"
+"</rpc-reply>]]>]]>"
 
 int write_to_client(mbedtls_ssl_context* ssl, const char* hello_string);
 const char* get_message(int msg_num);
