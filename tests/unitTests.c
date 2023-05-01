@@ -82,6 +82,30 @@ void test_get_key(void) {
     free(kv2.value);
 }
 
+void test_get_value(void) {
+    KeyValuePairArray array;
+    KeyValuePair kv1, kv2;
+    void *value;
+
+    init_key_value_array(&array, 2);
+    init_key_value_pair(&kv1, (char*) "key1", (void*) "value1", strlen("value1") + 1);
+    add_key_value(&array, &kv1);
+    init_key_value_pair(&kv2, (char*) "key2", (void*) "value2", strlen("value2") + 1);
+    add_key_value(&array, &kv2);
+
+    TEST_ASSERT_EQUAL(SUCCESS, get_value(&array, "key1", &value));
+    TEST_ASSERT_EQUAL_STRING("value1", (char *)value);
+
+    TEST_ASSERT_EQUAL(SUCCESS, get_value(&array, "key2", &value));
+    TEST_ASSERT_EQUAL_STRING("value2", (char *)value);
+
+    TEST_ASSERT_EQUAL(FAIL, get_value(&array, "key3", &value));
+
+    free(kv1.key);
+    free(kv1.value);
+    free(kv2.key);
+    free(kv2.value);
+}
 
 int main(void) {
     UNITY_BEGIN();
@@ -90,6 +114,7 @@ int main(void) {
     RUN_TEST(test_set_request_type);
     RUN_TEST(test_add_key_value);
     RUN_TEST(test_get_key);
+    RUN_TEST(test_get_value);
     // Add more RUN_TEST lines for the rest of the test functions
     return UNITY_END();
 }
