@@ -9,6 +9,9 @@
 #ifndef UNITY_PROGMEM
 #define UNITY_PROGMEM
 #endif
+#ifndef UNITY_OUTPUT_COLOR
+#define UNITY_OUTPUT_COLOR
+#endif
 
 /* If omitted from header, declare overrideable prototypes here so they're ready for use */
 #ifdef UNITY_OMIT_OUTPUT_CHAR_HEADER_DECLARATION
