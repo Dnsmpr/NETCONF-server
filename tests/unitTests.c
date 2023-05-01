@@ -29,13 +29,23 @@ void test_init_key_value_pair(void) {
     free(kv.value);
 }
 
+void test_set_request_type(void) {
+    KeyValuePairArray array;
+    init_key_value_array(&array, 5);
+    TEST_ASSERT_EQUAL(SUCCESS, set_request_type("GET", &array));
+    TEST_ASSERT_EQUAL_STRING("GET", array.request_type);
+    free_key_value_pair_array(&array);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_init_key_value_array);
     RUN_TEST(test_init_key_value_pair);
+    RUN_TEST(test_set_request_type);
     // Add more RUN_TEST lines for the rest of the test functions
     return UNITY_END();
 }
+
 
 
 // Add more test functions for the rest of the functions in your implementation
