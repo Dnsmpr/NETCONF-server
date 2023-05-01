@@ -94,10 +94,10 @@ void test_get_value(void) {
     add_key_value(&array, &kv2);
 
     TEST_ASSERT_EQUAL(SUCCESS, get_value(&array, "key1", &value));
-    TEST_ASSERT_EQUAL_STRING("value1", (char *)value);
+    TEST_ASSERT_EQUAL_STRING("value1", (char*) value);
 
     TEST_ASSERT_EQUAL(SUCCESS, get_value(&array, "key2", &value));
-    TEST_ASSERT_EQUAL_STRING("value2", (char *)value);
+    TEST_ASSERT_EQUAL_STRING("value2", (char*) value);
 
     TEST_ASSERT_EQUAL(FAIL, get_value(&array, "key3", &value));
 
