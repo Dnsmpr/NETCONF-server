@@ -123,6 +123,17 @@ void test_print_all_nodes(void) {
     free_key_value_pair_array(&array);
 }
 
+void test_init_key_value_array_max_capacity(void) {
+    KeyValuePairArray array;
+    TEST_ASSERT_EQUAL(SUCCESS, init_key_value_array(&array, MAX_CAPACITY + 1));
+    TEST_ASSERT_EQUAL(MAX_CAPACITY, array.capacity);
+    TEST_ASSERT_EQUAL(0, array.size);
+    TEST_ASSERT_NOT_NULL(array.data);
+    free(array.data);
+    
+}
+
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_init_key_value_array);
@@ -132,5 +143,6 @@ int main(void) {
     RUN_TEST(test_get_key);
     RUN_TEST(test_get_value);
     RUN_TEST(test_print_all_nodes);
+    RUN_TEST(test_init_key_value_array_max_capacity);
     return UNITY_END();
 }
