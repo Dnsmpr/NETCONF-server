@@ -10,6 +10,9 @@ OBJS=$(SRCS:.c=.o)
 TEST_SRCS=$(wildcard tests/*.c Unity/unity.c)
 TEST_OBJS=$(TEST_SRCS:.c=.o)
 
+# Add the object files that are required for both the main target and the test target
+COMMON_OBJS=parsing/DataStructures/KeyValuePairArray.o
+
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
@@ -34,8 +37,9 @@ Unity/%.o: Unity/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Build the unit tests
-$(TEST_EXEC): $(TEST_OBJS)
-	$(CC) $(CFLAGS) -o $(TEST_EXEC) $(TEST_OBJS) $(LIBS)
+$(TEST_EXEC): $(TEST_OBJS) parsing/DataStructures/KeyValuePairArray.c
+	$(CC) $(CFLAGS) -o $(TEST_EXEC) $(TEST_OBJS) parsing/DataStructures/KeyValuePairArray.c $(LIBS)
+
 
 tests/%.o: tests/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
