@@ -133,6 +133,16 @@ void test_init_key_value_array_max_capacity(void) {
     
 }
 
+void test_init_key_value_pair_null_value(void) {
+    KeyValuePair kv;
+    TEST_ASSERT_EQUAL(SUCCESS, init_key_value_pair(&kv, "test_key", NULL, 0));
+    TEST_ASSERT_EQUAL_STRING("test_key", kv.key);
+    TEST_ASSERT_EQUAL_STRING("", (char *)kv.value);
+    free(kv.key);
+    free(kv.value);
+}
+
+
 
 int main(void) {
     UNITY_BEGIN();
@@ -144,5 +154,6 @@ int main(void) {
     RUN_TEST(test_get_value);
     RUN_TEST(test_print_all_nodes);
     RUN_TEST(test_init_key_value_array_max_capacity);
+    RUN_TEST(test_init_key_value_pair_null_value);
     return UNITY_END();
 }
