@@ -37,11 +37,37 @@ void test_set_request_type(void) {
     free_key_value_pair_array(&array);
 }
 
+void test_add_key_value(void) {
+    KeyValuePairArray array;
+    KeyValuePair kv1, kv2, kv3;
+
+    init_key_value_array(&array, 2);
+    init_key_value_pair(&kv1, (char*) "key1", (void*) "value1", strlen("value1") + 1);
+    TEST_ASSERT_EQUAL(SUCCESS, add_key_value(&array, &kv1));
+    TEST_ASSERT_EQUAL(1, array.size);
+
+    init_key_value_pair(&kv2, (char*) "key2", (void*) "value2", strlen("value2") + 1);
+    TEST_ASSERT_EQUAL(SUCCESS, add_key_value(&array, &kv2));
+    TEST_ASSERT_EQUAL(2, array.size);
+
+    init_key_value_pair(&kv3, (char*) "key3", (void*) "value3", strlen("value3") + 1);
+    TEST_ASSERT_EQUAL(FAIL, add_key_value(&array, &kv3));
+    TEST_ASSERT_EQUAL(2, array.size);
+
+    free(kv1.key);
+    free(kv1.value);
+    free(kv2.key);
+    free(kv2.value);
+    free(kv3.key);
+    free(kv3.value);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_init_key_value_array);
     RUN_TEST(test_init_key_value_pair);
     RUN_TEST(test_set_request_type);
+    RUN_TEST(test_add_key_value);
     // Add more RUN_TEST lines for the rest of the test functions
     return UNITY_END();
 }
