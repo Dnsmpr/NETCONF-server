@@ -1,4 +1,8 @@
 #include "network.h"
+#include "KeyValuePairArray.h"
+#include "parse.h"
+#include "abcc.h"
+
 
 static void my_debug(void *ctx, int level,
                      const char *file, int line,
@@ -33,40 +37,9 @@ int write_to_client(mbedtls_ssl_context* ssl, const char* hello_string) {
 
     len = ret;
     mbedtls_printf(" %d bytes written\n\n%s\n", len, (char *)buf);
-
+ 
     return 0;
 }
-
-const char* get_message(int msg_num) {
-    switch (msg_num) {
-        case 0:
-            return NETCONF_HELLO;
-
-        case 1:
-            return NETCONF_RESPONSE_1;
-        
-        case 2:
-            return NETCONF_RESPONSE_2;
-
-        case 3:
-            return NETCONF_RESPONSE_3;
-
-        case 4:
-            return NETCONF_RESPONSE_4;
-
-        case 5:
-            return NETCONF_RESPONSE_5;
-
-        case 6:
-            return NETCONF_RESPONSE_6;
-
-        default:
-            mbedtls_printf("Invalid msg_num: %d\n", msg_num);
-            return "";
-    }
-}
-
-
 
 int mbed_ssl_server() {
   int ret, len;
@@ -229,17 +202,11 @@ reset:
 
     mbedtls_printf(" ok\n");
 
-    /** Send the NETCONF response immediately after handshake 
-    ret = write_to_client(&ssl, NETCONF_HELLO);
-    if (ret == RESET) {
-        goto reset;
-    } else if (ret == EXIT) {
-        goto exit;
-    }*/
-
     /** 7. Read the HTTP Request */
 /** Continuously read from the client */
-int msg_num = 0;
+char msg_num = 0;
+abcc device;
+init_abcc(&device);
 while (1) {
     mbedtls_printf("\n\n  < Read from client:");
     fflush(stdout);
@@ -271,16 +238,45 @@ while (1) {
     }
 
     len = ret; // The number of bytes read
-    mbedtls_printf(" %d bytes read\n\n%s", len, (char *)buf); // Print the response
-    
-    if (msg_num < 7) {
-        ret = write_to_client(&ssl, get_message(msg_num));
-        msg_num++;
-        if (ret == RESET) {
-            goto reset;
-        } else if (ret == EXIT) {
-            goto exit;
-        }
+    mbedtls_printf(" %d bytes read\n\n%s\n\n", len, (char *)buf); // Print the response
+
+    KeyValuePairArray array;
+
+
+    xmlInitParser();
+    xmlNodePtr root = NULL;
+    xmlDocPtr doc = NULL;
+    int result = parse_xml((char *)buf, &root, &doc);
+    if (result == -1){
+        printf("ERROR PARSING");
+        return -1;
+    }
+    //printf("\n\n IP BEFORE: %s \n\n", device.IP_ADDRESS);
+
+    init_key_value_array(&array, 10);
+    process_xml(&array, root);
+    print_all_nodes(&array);
+
+
+    char* client_reply;
+    char *msg_num_str = int_to_str(msg_num);
+    client_reply = create_xml_reply(&array, &device, msg_num_str);
+    ret = write_to_client(&ssl, client_reply);
+    //printf("\n\n IP AFTER: %s \n\n", device.IP_ADDRESS);
+    free_key_value_pair_array(&array);
+
+
+    // Clean up
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+    free(msg_num_str);
+    ++msg_num;
+
+    if(ret == RESET)
+        goto reset;
+    else if (ret == EXIT)
+    {
+        goto exit;
     }
 }
 
@@ -325,19 +321,4 @@ exit:
 
     mbedtls_exit(ret);
 }
-
-
-
-
-/* start a new server
- * int ssl_support : boolean to determine whether to use SSL encryption or not
- * int port : port to bind server
- */
-/*
-int main () {
-    int r;
-    r = mbed_ssl_server();
-    return r;
-}
-*/
 

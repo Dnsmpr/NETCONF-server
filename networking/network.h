@@ -38,7 +38,7 @@
   "<capability>urn:ietf:params:netconf:base:1.0</capability>"\
   "<capability>urn:ietf:params:netconf:capability:writable-running:1.0</capability>"\
   "<capability>urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring</capability>"\
-  "<capability>urn:hms:abcc?module=abcc&amp;revision=2000-01-01</capability>"\
+  "<capability>urn:hms:abcc?module=abcc&amp;revision=2002-01-01</capability>"\
  "</capabilities>"\
  "<session-id>4</session-id>"\
 "</hello>]]>]]>"
@@ -51,21 +51,19 @@
        "yang-version 1.1;"\
        "namespace \"urn:hms:abcc\";"\
        "prefix \"abcc\";"\
-       "revision 2000-01-01;"\
+       "revision 2002-01-01;"\
        "container attributes {"\
            "description \"Attributes of the abcc\";"\
            "config true;"\
-           "leaf name {"\
+           "leaf IP_ADDRESS {"\
                "mandatory true;"\
                "type string;"\
-           "}"\
-           "leaf age {"\
-               "type uint8;"\
            "}"\
        "}"\
    "}"\
  "</data>"\
 "</rpc-reply>]]>]]>"
+
 
 #define NETCONF_RESPONSE_2 \
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"\
@@ -74,16 +72,17 @@
   "<modules-state xmlns=\"urn:ietf:params:xml:ns:yang:ietf-yang-library\">"\
    "<module>"\
     "<name>abcc</name>"\
-    "<revision>2000-01-01</revision>"\
+    "<revision>2002-01-01</revision>"\
     "<namespace>urn:hms:abcc</namespace>"\
     "<conformance-type>implement</conformance-type>"\
     "<submodule></submodule>"\
-    "<feature></feature>"\
+    "<feature>IP_ADDRESS</feature>"\
     "<deviation></deviation>"\
    "</module>"\
   "</modules-state>"\
  "</data>"\
 "</rpc-reply>]]>]]>"
+
 
 #define NETCONF_RESPONSE_3 \
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"\
@@ -93,7 +92,7 @@
    "<schemas>"\
     "<schema>"\
      "<identifier>abcc</identifier>"\
-     "<version>2000-01-01</version>"\
+     "<version>2002-01-01</version>"\
      "<format>yang</format>"\
      "<namespace>urn:hms:abcc</namespace>"\
      /*"<location>NETCONF</location>"*/\
@@ -109,12 +108,12 @@
   "<data>"\
     "<abcc xmlns=\"urn:hms:abcc\">"\
       "<attributes>"\
-        "<name>Abcc</name>"\
-        "<age>30</age>"\
+        "<IP_ADDRESS>192.168.1.150</IP_ADDRESS>"\
       "</attributes>"\
     "</abcc>"\
   "</data>"\
 "</rpc-reply>]]>]]>"
+
 
 #define NETCONF_RESPONSE_5 \
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"\
@@ -132,7 +131,7 @@
 #define NETCONF_RESPONSE_6 \
 "<rpc-reply message-id=\"6\" xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\">"\
 "<ok/>"\
-"</rpc-reply>"
+"</rpc-reply>]]>]]>"
 
 int write_to_client(mbedtls_ssl_context* ssl, const char* hello_string);
 const char* get_message(int msg_num);
