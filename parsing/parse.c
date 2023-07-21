@@ -58,32 +58,32 @@ char* create_xml_reply(KeyValuePairArray *array, abcc* device, char *message_id)
   }
 
   if(!strcmp(array->request_type, RPC)) {
-    if(!get_key(array, (char*) "get")) {
-      if(!get_key(array, (char*) "netconf-state")) {
+    if(!get_key(array, GET)) {
+      if(!get_key(array, NETCONF_STATE)) {
         return NETCONF_RESPONSE_2;
       }
-      if(!get_key(array, (char*) "modules-state")) {
+      if(!get_key(array, MODULE_STATE)) {
           return NETCONF_RESPONSE_1;
       }
       return create_netconf_response_4(device->IP_ADDRESS, message_id);
     }
 
-    if(!get_key(array, (char*) "get-schema")) {
+    if(!get_key(array, GET_SCHEMA)) {
       return NETCONF_RESPONSE_1;
     }
 
-  if(!get_key(array, (char*) "edit-config")) {
-    if(get_key(array, (char*) "running")) {
+  if(!get_key(array, EDIT_CONFIG)) {
+    if(get_key(array, RUNNING)) {
       return create_netconf_response_4(device->IP_ADDRESS, message_id);
     }
     void* value = NULL;
-    get_value(array, (char*) "IP_ADDRESS", &value);
+    get_value(array, IP, &value);
     set_IP_ADDRESS(device, (char*) value);
     return NETCONF_RESPONSE_6;
 
   }
 
-    if(!get_key(array, (char*) "get-config")) {
+    if(!get_key(array, GET_CONFIG)) {
       return NETCONF_RESPONSE_3;
     } 
       

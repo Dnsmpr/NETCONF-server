@@ -10,6 +10,14 @@
 #define lock_operaton "lock"
 #define HELLO "hello"
 #define RPC "rpc"
+#define GET "get"
+#define NETCONF_STATE "netconf-state"
+#define MODULE_STATE "modules-state"
+#define GET_SCHEMA "get-schema"
+#define EDIT_CONFIG "edit-config"
+#define GET_CONFIG "get-config"
+#define RUNNING "running"
+#define IP "IP_ADDRESS"
 
 #define REQUEST "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
 <rpc message-id=\"101\" xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\">\
